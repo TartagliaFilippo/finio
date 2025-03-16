@@ -30,7 +30,7 @@ fun SettingsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         HeaderBar(
-            onClick = { showModal = false }
+            onClick = { showModal = true }
         )
 
         Box(

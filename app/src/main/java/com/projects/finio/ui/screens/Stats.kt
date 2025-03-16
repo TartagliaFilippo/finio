@@ -31,13 +31,13 @@ fun StatsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         HeaderBar(
-            onClick = { showModal = false }
+            onClick = { showModal = true }
         )
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable { showModal = !showModal },
+                .clickable { showModal = false },
             contentAlignment = Alignment.Center
         ) {
             Text(

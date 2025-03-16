@@ -25,8 +25,7 @@ import androidx.navigation.NavController
 
 @Composable
 fun NavigationSlider(
-    navController: NavController,
-    modifier: Modifier = Modifier
+    navController: NavController
 ) {
     val currentDestination = navController.currentBackStackEntry?.destination?.route
 
