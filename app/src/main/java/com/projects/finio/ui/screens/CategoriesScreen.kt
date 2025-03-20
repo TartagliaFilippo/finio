@@ -19,12 +19,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.projects.finio.data.viewModels.CategoryViewModel
 import com.projects.finio.ui.components.HeaderBar
 import com.projects.finio.ui.components.NavigationSlider
+import com.projects.finio.ui.components.formatTimestampUniversal
 
 @Composable
 fun CategoriesScreen(
@@ -32,8 +34,8 @@ fun CategoriesScreen(
     viewModel: CategoryViewModel = hiltViewModel()
 ) {
     var showModal by remember { mutableStateOf(false) }
-
     val categories by viewModel.allCategories.collectAsState()
+    val errorMessage = viewModel.errorMessage
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -42,13 +44,50 @@ fun CategoriesScreen(
             onClick = { showModal = !showModal }
         )
 
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            categories.forEach { category ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = category.title,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = category.description.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = formatTimestampUniversal(category.createdAt),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
         Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .clickable { showModal = false },
-            contentAlignment = Alignment.Center
+                .clickable { showModal = false }
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .fillMaxSize()
+            ) {
                 Button(
                     onClick = { viewModel.addCategory(
                         title = "nuova categoria",
@@ -57,19 +96,6 @@ fun CategoriesScreen(
                     ) }
                 ) {
                     Text("Aggiungi Categoria")
-                }
-
-                categories.forEach { category ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = category.title,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
                 }
             }
         }
