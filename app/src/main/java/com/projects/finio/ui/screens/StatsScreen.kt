@@ -1,60 +1,64 @@
 package com.projects.finio.ui.screens
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.projects.finio.ui.components.HeaderBar
-import com.projects.finio.ui.components.NavigationSlider
+import com.projects.finio.ui.components.AppDrawer
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(
     navController: NavController
 ) {
-    var showModal by remember { mutableStateOf(false) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        HeaderBar(
-            onClick = { showModal = true }
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { showModal = false },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                "Stats",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
+    AppDrawer(
+        drawerState = drawerState,
+        onItemClick = { selectedItem ->
+            scope.launch { drawerState.close() }
+            navController.navigate(selectedItem)
         }
-    }
-
-    if (showModal) {
+    ) {
         Column(
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier.fillMaxSize()
         ) {
-            NavigationSlider(navController)
+            TopAppBar(
+                title = { Text("Stats") },
+                navigationIcon = {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        Icon(imageVector = Icons.Default.Menu, contentDescription = "open drawer")
+                    }
+                }
+            )
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "Stats",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }

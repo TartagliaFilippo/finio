@@ -1,12 +1,12 @@
-package com.projects.finio.data.viewModels
+package com.projects.finio.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.projects.finio.room.entity.Category
-import com.projects.finio.room.repository.CategoryRepository
+import com.projects.finio.data.local.entity.Category
+import com.projects.finio.data.repository.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

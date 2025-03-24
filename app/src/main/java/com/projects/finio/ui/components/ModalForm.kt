@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.projects.finio.room.entity.Category
+import com.projects.finio.data.local.entity.Category
 
 @Composable
 fun NewCategoryModal(

@@ -1,4 +1,4 @@
-package com.projects.finio.room.entity
+package com.projects.finio.data.local.entity
 
 import android.os.Build
 import androidx.room.ColumnInfo

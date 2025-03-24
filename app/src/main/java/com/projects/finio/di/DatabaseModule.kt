@@ -1,7 +1,8 @@
-package com.projects.finio.data.di
+package com.projects.finio.di
 
 import android.content.Context
-import com.projects.finio.room.dao.CategoryDao
+import com.projects.finio.data.local.AppDatabase
+import com.projects.finio.data.local.dao.CategoryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
