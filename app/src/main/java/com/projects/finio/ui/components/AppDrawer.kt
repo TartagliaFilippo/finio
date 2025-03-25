@@ -44,11 +44,11 @@ fun DrawerContent(onItemClick: (String) -> Unit) {
         )
 
         val items = listOf(
-            "home" to Icons.Default.Home,
-            "categories" to Icons.Default.Menu,
-            "items" to Icons.Default.AddCircle,
-            "settings" to Icons.Default.Settings,
-            "stats" to Icons.Default.Info
+            "Home" to Icons.Default.Home,
+            "Categories" to Icons.Default.Menu,
+            "Items" to Icons.Default.AddCircle,
+            "Settings" to Icons.Default.Settings,
+            "Stats" to Icons.Default.Info
         )
 
         items.forEach { (title, icon) ->

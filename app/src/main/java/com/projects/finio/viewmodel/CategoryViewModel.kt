@@ -7,27 +7,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.projects.finio.data.local.entity.Category
 import com.projects.finio.data.repository.CategoryRepository
+import com.projects.finio.viewmodel.snackbar.SnackbarManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    private val repository: CategoryRepository
+    private val repository: CategoryRepository,
+    private val snackbarManager: SnackbarManager
 ) : ViewModel() {
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
-
-    private val _uiState = MutableStateFlow(CategoryUiState())
-    val uiState: StateFlow<CategoryUiState> = _uiState.asStateFlow()
 
     val allCategories: StateFlow<List<Category>> = repository
         .allCategories
@@ -81,17 +77,13 @@ class CategoryViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.deleteCategory(id)
-                _uiState.update { it.copy(message = "Categoria eliminata con successo") }
+                snackbarManager.showMessage("Categoria eliminata con successo")
             } catch (_: Exception) {
-                _uiState.update { it.copy(message = "Errore nella cancellazione") }
+                snackbarManager.showMessage(message = "Errore nella cancellazione")
             }
 
             delay(2000)
-            _uiState.update { it.copy(message = null) }
+            snackbarManager.clearMessage()
         }
     }
 }
-
-data class CategoryUiState(
-    val message: String? = null
-)

@@ -41,7 +41,7 @@ fun ItemsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text("Items") },
                 navigationIcon = {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(imageVector = Icons.Default.Menu, contentDescription = "open drawer")

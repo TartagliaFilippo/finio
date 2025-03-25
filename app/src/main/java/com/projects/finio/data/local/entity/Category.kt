@@ -18,10 +18,15 @@ import java.time.Instant
             onDelete = ForeignKey.CASCADE
         )
                   ],
-    indices = [ Index(
-        value = ["title"],
-        unique = true
-    ) ]
+    indices = [
+        Index(
+            value = ["title"],
+            unique = true
+        ),
+        Index(
+            value = ["parent_id"]
+        )
+    ]
 )
 data class Category(
     @PrimaryKey(autoGenerate = true)

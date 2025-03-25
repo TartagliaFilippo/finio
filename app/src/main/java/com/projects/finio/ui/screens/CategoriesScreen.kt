@@ -177,15 +177,6 @@ fun CategoriesScreen(
                 },
                 onDismiss = { newCategoryModal = false }
             )
-
-            snackbarMessage?.let { message ->
-                CustomSnackbar(
-                    message = message,
-                    onDismiss = { snackbarManager.clearMessage() },
-                    backgroundColor = Color(0xFF6200EA),
-                    textColor = Color.White
-                )
-            }
         }
     }
 }
