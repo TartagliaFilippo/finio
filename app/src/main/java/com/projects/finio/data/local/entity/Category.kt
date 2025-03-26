@@ -46,5 +46,12 @@ data class Category(
         Instant.now().epochSecond
     } else {
         System.currentTimeMillis() / 1000
+    },
+
+    @ColumnInfo(name = "updated_at")
+    val updatedAt: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Instant.now().epochSecond
+    } else {
+        System.currentTimeMillis() / 1000
     }
 )

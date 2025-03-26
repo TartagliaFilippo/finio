@@ -33,6 +33,14 @@ class CategoryViewModel @Inject constructor(
             emptyList()
         )
 
+    val rootCategories: StateFlow<List<Category>> = repository
+        .getRootCategories()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList()
+        )
+
     fun getSubCategories(parentId: Int) = repository.getSubCategories(parentId)
 
     fun addCategory(
@@ -56,6 +64,30 @@ class CategoryViewModel @Inject constructor(
                 description = description,
                 parentId = parentId
             ))
+
+            result.onFailure {
+                errorMessage = it.message
+            }
+
+            result.onSuccess {
+                errorMessage = null
+            }
+        }
+    }
+
+    fun updateCategory(category: Category) {
+        viewModelScope.launch {
+            if (category.title.isBlank()) {
+                errorMessage = "Il titolo non può essere vuoto"
+                return@launch
+            }
+
+            if (category.title.length > 30) {
+                errorMessage = "Il titolo non può superare i 30 caratteri"
+                return@launch
+            }
+
+            val result = repository.updateCategory(category)
 
             result.onFailure {
                 errorMessage = it.message

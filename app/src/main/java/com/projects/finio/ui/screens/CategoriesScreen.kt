@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -45,8 +46,9 @@ import com.projects.finio.viewmodel.CategoryViewModel
 import com.projects.finio.data.local.entity.Category
 import com.projects.finio.ui.components.AppDrawer
 import com.projects.finio.ui.components.CustomSnackbar
-import com.projects.finio.ui.components.NewCategoryModal
 import com.projects.finio.ui.components.formatTimestampUniversal
+import com.projects.finio.ui.components.modals.AddCategoryModal
+import com.projects.finio.ui.components.modals.EditCategoryModal
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,12 +60,14 @@ fun CategoriesScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var newCategoryModal by remember { mutableStateOf(false) }
+    var editCategory by remember { mutableStateOf<Category?>(null) }
 
     var categoryTitle by remember { mutableStateOf("") }
     var categoryDescription by remember { mutableStateOf("") }
     var categorySelected by remember { mutableStateOf<Category?>(null) }
 
     val categories by viewModel.allCategories.collectAsState()
+    val rootCategories = viewModel.rootCategories.collectAsState().value
     val snackbarManager = remember { SnackbarManager() }
     val snackbarMessage by snackbarManager.snackbarMessage.collectAsState()
 
@@ -117,6 +121,13 @@ fun CategoriesScreen(
                                     fontSize = 12.sp,
                                     color = Color.Gray
                                 )
+                                IconButton(onClick = { editCategory = category }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "Modifica categoria ${editCategory?.id}"
+                                    )
+                                }
+
                                 Button(onClick = {
                                     viewModel.deleteCategory(category.id)
                                     snackbarManager.showMessage("Categoria eliminata!")
@@ -155,13 +166,14 @@ fun CategoriesScreen(
                 }
             }
 
-            NewCategoryModal(
+            AddCategoryModal(
                 modifier = Modifier,
                 showModal = newCategoryModal,
                 title = "Nuova Categoria",
                 categoryTitle = categoryTitle,
                 categoryDescription = categoryDescription,
                 categories = categories,
+                rootCategories = rootCategories,
                 categorySelected = categorySelected,
                 errorMessage = viewModel.errorMessage,
                 onCategoryTitleChange = { categoryTitle = it },
@@ -176,6 +188,36 @@ fun CategoriesScreen(
                     categorySelected = null
                 },
                 onDismiss = { newCategoryModal = false }
+            )
+
+            EditCategoryModal(
+                showModal = editCategory != null,
+                category = editCategory,
+                categories = categories,
+                rootCategories = rootCategories,
+                errorMessage = viewModel.errorMessage,
+                onCategoryTitleChange = { newTitle ->
+                    editCategory = editCategory?.copy(title = newTitle)
+                },
+                onCategoryDescriptionChange = { newDesc ->
+                    editCategory = editCategory?.copy(description = newDesc)
+                },
+                onCategorySelect = { selectedCategory ->
+                    editCategory = editCategory?.copy(parentId = selectedCategory.id)
+                },
+                onConfirm = {
+                    editCategory?.let { category ->
+                        viewModel.updateCategory(category)
+                    }
+                    editCategory = null
+                },
+                onDelete = {
+                    editCategory?.let { category ->
+                        viewModel.deleteCategory(category.id)
+                    }
+                    editCategory = null
+                },
+                onDismiss = { editCategory = null }
             )
         }
     }

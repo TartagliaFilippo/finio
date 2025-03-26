@@ -9,7 +9,7 @@ import com.projects.finio.data.local.entity.Category
 
 @Database(
     entities = [Category::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

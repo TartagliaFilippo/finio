@@ -1,4 +1,4 @@
-package com.projects.finio.ui.components
+package com.projects.finio.ui.components.modals
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,13 +37,14 @@ import androidx.compose.ui.window.Dialog
 import com.projects.finio.data.local.entity.Category
 
 @Composable
-fun NewCategoryModal(
+fun AddCategoryModal(
     modifier: Modifier,
     showModal: Boolean,
     title: String,
     categoryTitle: String,
     categoryDescription: String,
     categories: List<Category>,
+    rootCategories: List<Category>,
     categorySelected: Category?,
     errorMessage: String?,
     onCategoryTitleChange: (String) -> Unit,
@@ -131,7 +132,7 @@ fun NewCategoryModal(
                                 onDismissRequest = { expandedSelect = false },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                categories.forEach { category ->
+                                rootCategories.forEach { category ->
                                     DropdownMenuItem(
                                         text = { Text(category.title) },
                                         onClick = {
