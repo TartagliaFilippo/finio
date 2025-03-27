@@ -48,6 +48,7 @@ import com.projects.finio.ui.components.AppDrawer
 import com.projects.finio.ui.components.CustomSnackbar
 import com.projects.finio.ui.components.formatTimestampUniversal
 import com.projects.finio.ui.components.modals.AddCategoryModal
+import com.projects.finio.ui.components.modals.ConfirmDialog
 import com.projects.finio.ui.components.modals.EditCategoryModal
 import kotlinx.coroutines.launch
 
@@ -60,6 +61,7 @@ fun CategoriesScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var newCategoryModal by remember { mutableStateOf(false) }
+    var categoryToDelete by remember { mutableStateOf<Category?>(null) }
     var editCategory by remember { mutableStateOf<Category?>(null) }
 
     var categoryTitle by remember { mutableStateOf("") }
@@ -128,10 +130,7 @@ fun CategoriesScreen(
                                     )
                                 }
 
-                                Button(onClick = {
-                                    viewModel.deleteCategory(category.id)
-                                    snackbarManager.showMessage("Categoria eliminata!")
-                                }) {
+                                Button(onClick = { categoryToDelete = category }) {
                                     Icon(Icons.Default.Delete, contentDescription = "Elimina Categoria")
                                 }
                             }
@@ -166,6 +165,7 @@ fun CategoriesScreen(
                 }
             }
 
+            // modale per aggiungere una nuova categoria
             AddCategoryModal(
                 modifier = Modifier,
                 showModal = newCategoryModal,
@@ -190,6 +190,7 @@ fun CategoriesScreen(
                 onDismiss = { newCategoryModal = false }
             )
 
+            // modale di modifica
             EditCategoryModal(
                 showModal = editCategory != null,
                 category = editCategory,
@@ -219,6 +220,20 @@ fun CategoriesScreen(
                 },
                 onDismiss = { editCategory = null }
             )
+
+            // modale di conferma cancellazione
+            categoryToDelete?.let { category ->
+                ConfirmDialog(
+                    title = "Cancellazione della categoria ${category.title}",
+                    message = "Sei sicuro di voler eliminare questa categoria?",
+                    onConfirm = {
+                        viewModel.deleteCategory(category.id)
+                        snackbarManager.showMessage("Categoria '${category.title}' eliminata!")
+                        categoryToDelete = null
+                    },
+                    onDismiss = { categoryToDelete = null }
+                )
+            }
         }
     }
 }
