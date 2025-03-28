@@ -10,8 +10,10 @@ import com.projects.finio.data.repository.CategoryRepository
 import com.projects.finio.viewmodel.snackbar.SnackbarManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +27,10 @@ class CategoryViewModel @Inject constructor(
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    // tutte le categorie
     val allCategories: StateFlow<List<Category>> = repository
         .allCategories
         .stateIn(
@@ -33,6 +39,21 @@ class CategoryViewModel @Inject constructor(
             emptyList()
         )
 
+    // categorie filtrate
+    val filteredCategories = allCategories
+        .combine(_searchQuery) { categories, query ->
+            if (query.isBlank()) {
+                categories
+            } else {
+                categories.filter { it.title.contains(query, ignoreCase = true) }
+            }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList()
+        )
+
+    // solo le categorie padre
     val rootCategories: StateFlow<List<Category>> = repository
         .getRootCategories()
         .stateIn(
@@ -42,6 +63,11 @@ class CategoryViewModel @Inject constructor(
         )
 
     fun getSubCategories(parentId: Int) = repository.getSubCategories(parentId)
+
+    // aggiorno l'input di ricerca
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
 
     fun addCategory(
         title: String,

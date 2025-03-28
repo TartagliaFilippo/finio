@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,6 +25,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -60,6 +62,7 @@ fun CategoriesScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var showSearch by remember { mutableStateOf(false) }
     var newCategoryModal by remember { mutableStateOf(false) }
     var categoryToDelete by remember { mutableStateOf<Category?>(null) }
     var editCategory by remember { mutableStateOf<Category?>(null) }
@@ -68,7 +71,8 @@ fun CategoriesScreen(
     var categoryDescription by remember { mutableStateOf("") }
     var categorySelected by remember { mutableStateOf<Category?>(null) }
 
-    val categories by viewModel.allCategories.collectAsState()
+    val categories by viewModel.filteredCategories.collectAsState()
+    val searchCategory by viewModel.searchQuery.collectAsState()
     val rootCategories = viewModel.rootCategories.collectAsState().value
     val snackbarManager = remember { SnackbarManager() }
     val snackbarMessage by snackbarManager.snackbarMessage.collectAsState()
@@ -93,8 +97,29 @@ fun CategoriesScreen(
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(imageVector = Icons.Default.Menu, contentDescription = "open drawer")
                         }
+                    },
+                    actions = {
+                        IconButton(onClick = { showSearch = !showSearch }) {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "Cerca")
+                        }
                     }
                 )
+
+                if (showSearch) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        TextField(
+                            value = searchCategory,
+                            onValueChange = { viewModel.updateSearchQuery(it) },
+                            placeholder = { Text("Cerca categorie...") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+                    }
+                }
 
                 LazyColumn(
                     modifier = Modifier
