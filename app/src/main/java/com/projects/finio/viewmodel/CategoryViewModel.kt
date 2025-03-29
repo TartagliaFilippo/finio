@@ -27,6 +27,7 @@ class CategoryViewModel @Inject constructor(
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    // textField di ricerca sulla vista
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
@@ -137,7 +138,7 @@ class CategoryViewModel @Inject constructor(
                 repository.deleteCategory(id)
                 snackbarManager.showMessage("Categoria eliminata con successo")
             } catch (_: Exception) {
-                snackbarManager.showMessage(message = "Errore nella cancellazione")
+                snackbarManager.showMessage("Errore nella cancellazione")
             }
 
             delay(2000)
