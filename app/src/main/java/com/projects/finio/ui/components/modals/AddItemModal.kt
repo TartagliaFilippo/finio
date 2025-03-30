@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.projects.finio.data.local.entity.Category
+import com.projects.finio.data.local.entity.Item
 
 @Composable
 fun AddItemModal(
@@ -44,6 +45,7 @@ fun AddItemModal(
     itemName: String,
     itemDescription: String,
     categorySelected: Category?,
+    items: List<Item>,
     categories: List<Category>,
     errorMessage: String?,
     onItemNameChange: (String) -> Unit,
@@ -84,7 +86,7 @@ fun AddItemModal(
                                 localError = when {
                                     it.isBlank() -> "Il nome non può essere vuoto"
                                     it.length > 30 -> "Il nome non può superare i 30 caratteri"
-                                    categories.any { category -> category.title == it } -> "Il nome esiste già!"
+                                    items.any { item -> item.name == it } -> "Il nome esiste già!"
                                     else -> null
                                 }
                             },
