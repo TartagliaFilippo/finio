@@ -73,4 +73,39 @@ class ItemViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateItem(item: Item) {
+        viewModelScope.launch {
+            if (item.name.isBlank()) {
+                errorMessage = "L'articolo deve avere un nome"
+                return@launch
+            }
+
+            if (item.name.length > 30) {
+                errorMessage = "Il nome non può superare i 30 caratteri"
+                return@launch
+            }
+
+            val result = repository.updateItem(item)
+
+            result.onFailure {
+                errorMessage = it.message
+            }
+
+            result.onSuccess {
+                errorMessage = null
+            }
+        }
+    }
+
+    fun deleteItem(id: Int) {
+        viewModelScope.launch {
+            try {
+                repository.deleteItem(id)
+                snackbarManager.showMessage("Articolo eliminato con successo!")
+            } catch (_: Exception) {
+                snackbarManager.showMessage("Errore nella cancellazione")
+            }
+        }
+    }
 }

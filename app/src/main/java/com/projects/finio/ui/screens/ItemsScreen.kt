@@ -16,7 +16,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -40,7 +44,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -48,8 +51,9 @@ import com.projects.finio.data.local.entity.Category
 import com.projects.finio.data.local.entity.Item
 import com.projects.finio.ui.components.AppDrawer
 import com.projects.finio.ui.components.CustomSnackbar
-import com.projects.finio.ui.components.formatTimestampUniversal
 import com.projects.finio.ui.components.modals.AddItemModal
+import com.projects.finio.ui.components.modals.ConfirmDialog
+import com.projects.finio.ui.components.modals.EditItemModal
 import com.projects.finio.viewmodel.CategoryViewModel
 import com.projects.finio.viewmodel.ItemViewModel
 import com.projects.finio.viewmodel.snackbar.SnackbarManager
@@ -65,6 +69,8 @@ fun ItemsScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var newItemModal by remember { mutableStateOf(false) }
+    var itemToDelete by remember { mutableStateOf<Item?>(null) }
+    var editItem by remember { mutableStateOf<Item?>(null) }
 
     var itemName by remember { mutableStateOf("") }
     var itemDescription by remember { mutableStateOf("") }
@@ -138,16 +144,40 @@ fun ItemsScreen(
                                                 Text(text = item.description ?: "Nessuna descrizione")
                                             }
                                         }
+                                    }
 
-                                        if (itemShow == item) {
-                                            Text(
-                                                text = formatTimestampUniversal(item.createdAt),
-                                                modifier = Modifier.align(Alignment.CenterVertically),
-                                                fontSize = 12.sp,
-                                                color = Color.Gray
-                                            )
+                                    if (itemShow == item) {
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Button(
+                                                onClick = { editItem = item },
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Color.Transparent,
+                                                    contentColor = Color.Black
+                                                )
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Edit,
+                                                    contentDescription = "Modifica Articolo ${editItem?.id}"
+                                                )
+                                                Text("Modifica")
+                                            }
 
-                                            Text(text = item.categoryId.toString())
+                                            Button(
+                                                onClick = { itemToDelete = item },
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Color.Transparent,
+                                                    contentColor = Color.Red
+                                                )
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = "Elimina Articolo"
+                                                )
+                                                Text("Elimina")
+                                            }
                                         }
                                     }
                                 }
@@ -215,6 +245,44 @@ fun ItemsScreen(
                 },
                 onDismiss = { newItemModal = false }
             )
+
+            EditItemModal(
+                showModal = editItem != null,
+                item = editItem,
+                items = items,
+                categories = categories,
+                errorMessage = viewModel.errorMessage,
+                onItemNameChange = { newName ->
+                    editItem = editItem?.copy(name = newName)
+                },
+                onItemDescriptionChange = { newDesc ->
+                    editItem = editItem?.copy(description = newDesc)
+                },
+                onCategorySelect = { selectedCategory ->
+                    editItem = editItem?.copy(categoryId = selectedCategory.id)
+                },
+                onConfirm = {
+                    editItem?.let { item ->
+                        viewModel.updateItem(item)
+                    }
+                    editItem = null
+                },
+                onDismiss = { editItem = null}
+            )
+
+            // modale di conferma cancellazione
+            itemToDelete?.let { item ->
+                ConfirmDialog(
+                    title = "Cancellazione dell'articolo ${item.name}",
+                    message = "Sei sicuro di voler eliminare questo articolo?",
+                    onConfirm = {
+                        viewModel.deleteItem(item.id)
+                        snackbarManager.showMessage("Articolo '${item.name}' eliminata!")
+                        itemToDelete = null
+                    },
+                    onDismiss = { itemToDelete = null }
+                )
+            }
         }
     }
 }
