@@ -122,9 +122,9 @@ fun EditItemModal(
                                 onClick = { expandedSelect = true },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(text = item.categoryId?.let { categoryId ->
+                                Text(text = item.categoryId.let { categoryId ->
                                     categories.find { it.id == categoryId }?.title ?: "Nessuna categoria associata"
-                                } ?: "Nessuna categoria associata")
+                                })
                                 Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
                             }
 

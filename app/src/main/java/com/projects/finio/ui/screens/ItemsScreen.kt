@@ -81,6 +81,7 @@ fun ItemsScreen(
     val categories by categoryViewModel.allCategories.collectAsState()
     val snackbarManager = remember { SnackbarManager() }
     val snackbarMessage by snackbarManager.snackbarMessage.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     val columns = 2
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -225,7 +226,7 @@ fun ItemsScreen(
                 categorySelected = selectedCategory,
                 items = items,
                 categories = categories,
-                errorMessage = viewModel.errorMessage,
+                errorMessage = errorMessage,
                 onItemNameChange = { itemName = it },
                 onItemDescriptionChange = { itemDescription = it },
                 onCategorySelect = { selectedCategory = it },
@@ -233,7 +234,7 @@ fun ItemsScreen(
                     viewModel.addItem(
                         name = itemName,
                         description = itemDescription.takeIf { it.isNotBlank() },
-                        categoryId = selectedCategory?.id,
+                        categoryId = selectedCategory?.id ?: -1,
                         subscription = false,
                         offer = false
                     )
@@ -251,7 +252,7 @@ fun ItemsScreen(
                 item = editItem,
                 items = items,
                 categories = categories,
-                errorMessage = viewModel.errorMessage,
+                errorMessage = errorMessage,
                 onItemNameChange = { newName ->
                     editItem = editItem?.copy(name = newName)
                 },
@@ -277,7 +278,7 @@ fun ItemsScreen(
                     message = "Sei sicuro di voler eliminare questo articolo?",
                     onConfirm = {
                         viewModel.deleteItem(item.id)
-                        snackbarManager.showMessage("Articolo '${item.name}' eliminata!")
+                        snackbarManager.showMessage("Articolo '${item.name}' eliminato!")
                         itemToDelete = null
                     },
                     onDismiss = { itemToDelete = null }

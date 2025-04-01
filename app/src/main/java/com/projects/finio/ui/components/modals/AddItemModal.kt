@@ -50,12 +50,13 @@ fun AddItemModal(
     errorMessage: String?,
     onItemNameChange: (String) -> Unit,
     onItemDescriptionChange: (String) -> Unit,
-    onCategorySelect: (Category) -> Unit,
+    onCategorySelect: (Category?) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
     var expandedSelect by remember { mutableStateOf(false) }
     var localError by remember { mutableStateOf<String?>(null) }
+    var categoryError by remember { mutableStateOf<String?>(null) }
 
     if (showModal) {
         Dialog(onDismissRequest = onDismiss) {
@@ -122,27 +123,42 @@ fun AddItemModal(
                         Box(modifier = Modifier.fillMaxWidth()) {
                             OutlinedButton(
                                 onClick = { expandedSelect = true },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    // TODO: assegna colore rosso se trovo errore al bordo
                             ) {
                                 Text(text = categorySelected?.title ?: "Seleziona categoria padre")
-                                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Apri categorie"
+                                )
                             }
 
                             DropdownMenu(
                                 expanded = expandedSelect,
                                 onDismissRequest = { expandedSelect = false },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 categories.forEach { category ->
                                     DropdownMenuItem(
                                         text = { Text(category.title) },
                                         onClick = {
                                             onCategorySelect(category)
+                                            categoryError = null
                                             expandedSelect = false
                                         }
                                     )
                                 }
                             }
+                        }
+
+                        if (categoryError != null) {
+                            Text(
+                                text = categoryError!!,
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 8.dp)
+                                )
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -155,12 +171,14 @@ fun AddItemModal(
                                 Text("Annulla")
                             }
                             Button(
-                                enabled = localError == null && errorMessage == null,
+                                enabled = localError == null && errorMessage == null && categoryError == null,
                                 onClick = {
                                     if (itemName.isBlank()) {
                                         localError = "Il nome non può essere vuoto"
                                     } else if (itemName.length > 30) {
                                         localError = "Il nome non può superare i 30 caratteri"
+                                    } else if (categorySelected == null) {
+                                        categoryError = "Devi selezionare una categoria"
                                     } else {
                                         onConfirm()
                                     }

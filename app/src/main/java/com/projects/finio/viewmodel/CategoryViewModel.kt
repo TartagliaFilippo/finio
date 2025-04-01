@@ -1,15 +1,10 @@
 package com.projects.finio.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.projects.finio.data.local.entity.Category
 import com.projects.finio.data.repository.CategoryRepository
-import com.projects.finio.viewmodel.snackbar.SnackbarManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +15,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    private val repository: CategoryRepository,
-    private val snackbarManager: SnackbarManager
+    private val repository: CategoryRepository
 ) : ViewModel() {
 
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
 
     // textField di ricerca sulla vista
     private val _searchQuery = MutableStateFlow("")
@@ -70,22 +64,29 @@ class CategoryViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
+    private fun validateItem(
+        name: String,
+    ): String? {
+        return when {
+            name.isBlank() -> "La categoria deve avere un titolo"
+            name.length > 30 -> "Il titolo non può superare i 30 caratteri"
+            else -> null
+        }
+    }
+
     fun addCategory(
         title: String,
         description: String?,
         parentId: Int?
-    ) {
+    ): Result<Unit> {
+        val error = validateItem(title)
+
+        if (error != null) {
+            _errorMessage.value = error
+            return Result.failure(Exception(error))
+        }
+
         viewModelScope.launch {
-            if (title.isBlank()) {
-                errorMessage = "Il titolo non può essere vuoto"
-                return@launch
-            }
-
-            if (title.length > 30) {
-                errorMessage = "Il titolo non può superare i 30 caratteri"
-                return@launch
-            }
-
             val result = repository.insertCategory(Category(
                 title = title,
                 description = description,
@@ -93,37 +94,37 @@ class CategoryViewModel @Inject constructor(
             ))
 
             result.onFailure {
-                errorMessage = it.message
+                _errorMessage.value = it.message
             }
 
             result.onSuccess {
-                errorMessage = null
+                _errorMessage.value = null
             }
         }
+        return Result.success(Unit)
     }
 
-    fun updateCategory(category: Category) {
-        viewModelScope.launch {
-            if (category.title.isBlank()) {
-                errorMessage = "Il titolo non può essere vuoto"
-                return@launch
-            }
+    fun updateCategory(category: Category): Result<Unit> {
+        val error = validateItem(category.title)
 
-            if (category.title.length > 30) {
-                errorMessage = "Il titolo non può superare i 30 caratteri"
-                return@launch
-            }
+        if (error != null) {
+            _errorMessage.value = error
+            return Result.failure(Exception(error))
+        }
+
+        viewModelScope.launch {
 
             val result = repository.updateCategory(category)
 
             result.onFailure {
-                errorMessage = it.message
+                _errorMessage.value = it.message
             }
 
             result.onSuccess {
-                errorMessage = null
+                _errorMessage.value = null
             }
         }
+        return Result.success(Unit)
     }
 
     fun deleteAllCategories() {
@@ -136,13 +137,9 @@ class CategoryViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.deleteCategory(id)
-                snackbarManager.showMessage("Categoria eliminata con successo")
             } catch (_: Exception) {
-                snackbarManager.showMessage("Errore nella cancellazione")
+                _errorMessage.value = "Errore nella cancellazione"
             }
-
-            delay(2000)
-            snackbarManager.clearMessage()
         }
     }
 }

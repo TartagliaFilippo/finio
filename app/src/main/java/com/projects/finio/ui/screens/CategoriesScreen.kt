@@ -78,6 +78,7 @@ fun CategoriesScreen(
     val rootCategories = viewModel.rootCategories.collectAsState().value
     val snackbarManager = remember { SnackbarManager() }
     val snackbarMessage by snackbarManager.snackbarMessage.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     AppDrawer(
         drawerState = drawerState,
@@ -128,7 +129,7 @@ fun CategoriesScreen(
                         .fillMaxSize()
                         .weight(1f)
                 ) {
-                    items(categories) { category ->
+                    items(categories) { category -> //TODO gestione della ricerca vuota
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -234,7 +235,7 @@ fun CategoriesScreen(
                 categories = categories,
                 rootCategories = rootCategories,
                 categorySelected = selectedCategory,
-                errorMessage = viewModel.errorMessage,
+                errorMessage = errorMessage,
                 onCategoryTitleChange = { categoryTitle = it },
                 onCategoryDescriptionChange = { categoryDescription = it },
                 onCategorySelect = { selectedCategory = it },
@@ -255,7 +256,7 @@ fun CategoriesScreen(
                 category = editCategory,
                 categories = categories,
                 rootCategories = rootCategories,
-                errorMessage = viewModel.errorMessage,
+                errorMessage = errorMessage,
                 onCategoryTitleChange = { newTitle ->
                     editCategory = editCategory?.copy(title = newTitle)
                 },

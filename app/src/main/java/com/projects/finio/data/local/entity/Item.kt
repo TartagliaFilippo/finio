@@ -28,12 +28,13 @@ import java.time.Instant
         )
     ]
 )
+
 data class Item (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
     @ColumnInfo(name = "category_id")
-    val categoryId: Int?,
+    val categoryId: Int,
 
     @ColumnInfo(name = "name")
     val name: String,   // VARCHAR(30)

@@ -1,15 +1,11 @@
 package com.projects.finio.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.projects.finio.data.local.entity.Item
 import com.projects.finio.data.repository.ItemRepository
-import com.projects.finio.viewmodel.snackbar.SnackbarManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -18,12 +14,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ItemViewModel @Inject constructor(
-    private val repository: ItemRepository,
-    private val snackbarManager: SnackbarManager
+    private val repository: ItemRepository
 ) : ViewModel() {
 
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    private fun validateItem(
+        name: String,
+        categoryId: Int
+    ): String? {
+        return when {
+            name.isBlank() -> "l'articolo deve avere un nome"
+            name.length > 30 -> "Il nome non può superare i 30 caratteri"
+            categoryId <= 0 -> "Seleziona una categoria valida"
+            else -> null
+        }
+    }
 
     val allItems: StateFlow<List<Item>> = repository
         .allItems
@@ -36,21 +43,18 @@ class ItemViewModel @Inject constructor(
     fun addItem(
         name: String,
         description: String?,
-        categoryId: Int? = 0,
+        categoryId: Int,
         subscription: Boolean?,
         offer: Boolean?
-    ) {
+    ): Result<Unit> {
+        val error = validateItem(name, categoryId)
+
+        if (error != null) {
+            _errorMessage.value = error
+            return Result.failure(Exception(error))
+        }
+
         viewModelScope.launch {
-            if (name.isBlank()) {
-                errorMessage = "L'articolo deve avere un nome"
-                return@launch
-            }
-
-            if (name.length > 30) {
-                errorMessage = "Il nome non può superare i 30 caratteri"
-                return@launch
-            }
-
             val result = repository.insertItem(Item(
                 name = name,
                 description = description,
@@ -61,50 +65,44 @@ class ItemViewModel @Inject constructor(
             ))
 
             result.onFailure {
-                errorMessage = it.message
-                snackbarManager.showMessage("$errorMessage")
-
-                delay(2000)
-                snackbarManager.clearMessage()
+                _errorMessage.value = it.message
             }
 
             result.onSuccess {
-                errorMessage = null
+                _errorMessage.value = null
             }
         }
+        return Result.success(Unit)
     }
 
-    fun updateItem(item: Item) {
+    fun updateItem(item: Item): Result<Unit> {
+        val error = validateItem(item.name, item.categoryId)
+
+        if (error != null) {
+            _errorMessage.value = error
+            return Result.failure(Exception(error))
+        }
+
         viewModelScope.launch {
-            if (item.name.isBlank()) {
-                errorMessage = "L'articolo deve avere un nome"
-                return@launch
-            }
-
-            if (item.name.length > 30) {
-                errorMessage = "Il nome non può superare i 30 caratteri"
-                return@launch
-            }
-
             val result = repository.updateItem(item)
 
             result.onFailure {
-                errorMessage = it.message
+                _errorMessage.value = it.message
             }
 
             result.onSuccess {
-                errorMessage = null
+                _errorMessage.value = null
             }
         }
+        return Result.success(Unit)
     }
 
     fun deleteItem(id: Int) {
         viewModelScope.launch {
             try {
                 repository.deleteItem(id)
-                snackbarManager.showMessage("Articolo eliminato con successo!")
             } catch (_: Exception) {
-                snackbarManager.showMessage("Errore nella cancellazione")
+                _errorMessage.value = "Errore nella cancellazione"
             }
         }
     }
