@@ -45,7 +45,6 @@ class ItemViewModel @Inject constructor(
         description: String?,
         categoryId: Int,
         subscription: Boolean?,
-        offer: Boolean?
     ): Result<Unit> {
         val error = validateItem(name, categoryId)
 
@@ -60,7 +59,6 @@ class ItemViewModel @Inject constructor(
                 description = description,
                 categoryId = categoryId,
                 subscription = subscription == false,
-                offer = offer == false,
                 expireDate = 0,
             ))
 

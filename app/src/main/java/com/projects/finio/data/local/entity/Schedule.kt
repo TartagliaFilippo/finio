@@ -27,6 +27,9 @@ data class Schedule (
     @ColumnInfo(name = "description")
     val description: String?,
 
+    @ColumnInfo(name = "total")
+    val total: Double?,
+
     @ColumnInfo(name = "created_at")
     val createdAt: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         Instant.now().epochSecond

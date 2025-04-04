@@ -236,7 +236,6 @@ fun ItemsScreen(
                         description = itemDescription.takeIf { it.isNotBlank() },
                         categoryId = selectedCategory?.id ?: -1,
                         subscription = false,
-                        offer = false
                     )
                     newItemModal = false
                     snackbarManager.showMessage("Articolo aggiunto con successo!")

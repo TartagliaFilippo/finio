@@ -35,11 +35,11 @@ data class ScheduleItem (
     @ColumnInfo(name = "item_id")
     val itemId: Int,
 
-    @ColumnInfo(name = "total")
-    val total: Double,
+    @ColumnInfo(name = "type")
+    val type: Int,
 
     @ColumnInfo(name = "item_quantity")
-    val itemQuantity: Int,
+    val itemQuantity: Int?,
 
     @ColumnInfo(name = "expire_date")
     val expireDate: Long?,

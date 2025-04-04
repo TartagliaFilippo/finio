@@ -45,9 +45,6 @@ data class Item (
     @ColumnInfo(name = "subscription")
     val subscription: Boolean = false,
 
-    @ColumnInfo(name = "offer")
-    val offer: Boolean = false,
-
     @ColumnInfo(name = "expire_date")
     val expireDate: Long?,
 
