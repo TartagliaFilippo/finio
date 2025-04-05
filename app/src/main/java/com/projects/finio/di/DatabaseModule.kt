@@ -5,6 +5,7 @@ import com.projects.finio.data.local.AppDatabase
 import com.projects.finio.data.local.dao.CategoryDao
 import com.projects.finio.data.local.dao.ItemDao
 import com.projects.finio.data.local.dao.PeriodDao
+import com.projects.finio.data.local.dao.ScheduleDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +31,11 @@ object DatabaseModule {
     @Provides
     fun provideItemDao(database: AppDatabase): ItemDao {
         return database.itemDao()
+    }
+
+    @Provides
+    fun provideScheduleDao(database: AppDatabase): ScheduleDao {
+        return database.scheduleDao()
     }
 
     @Provides

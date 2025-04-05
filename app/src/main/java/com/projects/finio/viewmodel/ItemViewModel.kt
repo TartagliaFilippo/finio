@@ -20,6 +20,7 @@ class ItemViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    // validazione dei campi
     private fun validateItem(
         name: String,
         categoryId: Int
@@ -54,13 +55,15 @@ class ItemViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = repository.insertItem(Item(
-                name = name,
-                description = description,
-                categoryId = categoryId,
-                subscription = subscription == false,
-                expireDate = 0,
-            ))
+            val result = repository.insertItem(
+                Item(
+                    name = name,
+                    description = description,
+                    categoryId = categoryId,
+                    subscription = subscription == false,
+                    expireDate = 0,
+                )
+            )
 
             result.onFailure {
                 _errorMessage.value = it.message

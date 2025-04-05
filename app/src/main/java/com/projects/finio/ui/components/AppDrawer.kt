@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ fun DrawerContent(onItemClick: (String) -> Unit) {
             "Home" to Icons.Default.Home,
             "Categories" to Icons.Default.Menu,
             "Items" to Icons.Default.AddCircle,
+            "Schedule" to Icons.Default.Star,
             "Settings" to Icons.Default.Settings,
             "Stats" to Icons.Default.Info
         )

@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.projects.finio.ui.screens.CategoriesScreen
 import com.projects.finio.ui.screens.HomeScreen
 import com.projects.finio.ui.screens.ItemsScreen
+import com.projects.finio.ui.screens.ScheduleScreen
 import com.projects.finio.ui.screens.SettingsScreen
 import com.projects.finio.ui.screens.StatsScreen
 
@@ -21,6 +22,7 @@ fun Navigation() {
         composable("home") { HomeScreen(navController) }
         composable("categories") { CategoriesScreen(navController) }
         composable("items") { ItemsScreen(navController) }
+        composable("schedule") { ScheduleScreen(navController) }
         composable("stats") { StatsScreen(navController) }
         composable("settings") { SettingsScreen(navController) }
     }
