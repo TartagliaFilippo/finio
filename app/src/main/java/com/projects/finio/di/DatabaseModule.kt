@@ -4,6 +4,7 @@ import android.content.Context
 import com.projects.finio.data.local.AppDatabase
 import com.projects.finio.data.local.dao.CategoryDao
 import com.projects.finio.data.local.dao.ItemDao
+import com.projects.finio.data.local.dao.NoteDao
 import com.projects.finio.data.local.dao.PeriodDao
 import com.projects.finio.data.local.dao.ScheduleDao
 import dagger.Module
@@ -26,6 +27,11 @@ object DatabaseModule {
     @Provides
     fun provideCategoryDao(database: AppDatabase): CategoryDao {
         return database.categoryDao()
+    }
+
+    @Provides
+    fun provideNoteDao(database: AppDatabase): NoteDao {
+        return database.noteDao()
     }
 
     @Provides

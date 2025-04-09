@@ -90,7 +90,8 @@ class CategoryViewModel @Inject constructor(
             val result = repository.insertCategory(Category(
                 title = title,
                 description = description,
-                parentId = parentId
+                color = "0xFFA8D0DB",
+                parentId = parentId,
             ))
 
             result.onFailure {

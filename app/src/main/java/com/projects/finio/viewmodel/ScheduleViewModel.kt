@@ -38,6 +38,7 @@ class ScheduleViewModel @Inject constructor(
                     title = title,
                     description = description,
                     total = 0.00,
+                    expireDate = null
                 )
             )
 
