@@ -38,6 +38,9 @@ data class Category(
     @ColumnInfo(name = "description")
     val description: String?,
 
+    @ColumnInfo(name = "color")
+    val color: String?,
+
     @ColumnInfo(name = "parent_id")
     val parentId: Int?,
 

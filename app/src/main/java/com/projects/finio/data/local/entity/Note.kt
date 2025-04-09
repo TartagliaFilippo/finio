@@ -3,32 +3,43 @@ package com.projects.finio.data.local.entity
 import android.os.Build
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.time.Instant
 
 @Entity(
-    tableName = "schedules",
-    indices = [
-        Index(
-            value = ["title"],
-            unique = true
+    tableName = "notes",
+    foreignKeys = [
+        ForeignKey(
+            entity = Category::class,
+            parentColumns = ["id"],
+            childColumns = ["category_id"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Period::class,
+            parentColumns = ["id"],
+            childColumns = ["period_id"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
 
-data class Schedule (
+data class Note (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
+    @ColumnInfo(name = "category_id")
+    val categoryId: Int,
+
+    @ColumnInfo(name = "period_id")
+    val periodId: Int,
+
     @ColumnInfo(name = "title")
-    val title: String,  // VARCHAR30
+    val title: String?,
 
-    @ColumnInfo(name = "description")
-    val description: String?,
-
-    @ColumnInfo(name = "total")
-    val total: Double?,
+    @ColumnInfo(name = "content")
+    val content: String?,
 
     @ColumnInfo(name = "expire_date")
     val expireDate: Long?,

@@ -35,14 +35,8 @@ data class ScheduleItem (
     @ColumnInfo(name = "item_id")
     val itemId: Int,
 
-    @ColumnInfo(name = "type")
-    val type: Int,
-
     @ColumnInfo(name = "item_quantity")
     val itemQuantity: Int?,
-
-    @ColumnInfo(name = "expire_date")
-    val expireDate: Long?,
 
     @ColumnInfo(name = "created_at")
     val createdAt: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
