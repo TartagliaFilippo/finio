@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
@@ -46,6 +47,7 @@ fun DrawerContent(onItemClick: (String) -> Unit) {
 
         val items = listOf(
             "Home" to Icons.Default.Home,
+            "Notes" to Icons.Default.MailOutline,
             "Categories" to Icons.Default.Menu,
             "Items" to Icons.Default.AddCircle,
             "Schedule" to Icons.Default.Star,

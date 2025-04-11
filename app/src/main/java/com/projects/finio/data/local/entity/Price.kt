@@ -35,6 +35,9 @@ data class Price (
     @ColumnInfo(name = "price")
     val price: Double,
 
+    @ColumnInfo(name = "paid")
+    val paid: Boolean = false,
+
     @ColumnInfo(name = "offer")
     val offer: Boolean = false,
 

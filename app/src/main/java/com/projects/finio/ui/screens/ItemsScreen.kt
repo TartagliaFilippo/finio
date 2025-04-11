@@ -83,6 +83,7 @@ fun ItemsScreen(
     val snackbarMessage by snackbarManager.snackbarMessage.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
+    // gestione degli elementi nella LazyColumn
     val columns = 2
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val cardSize = screenWidth / columns

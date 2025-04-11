@@ -36,10 +36,10 @@ data class Note (
     val periodId: Int,
 
     @ColumnInfo(name = "title")
-    val title: String?,
+    val title: String,
 
     @ColumnInfo(name = "content")
-    val content: String?,
+    val content: String,
 
     @ColumnInfo(name = "expire_date")
     val expireDate: Long?,
