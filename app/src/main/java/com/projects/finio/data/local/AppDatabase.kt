@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.projects.finio.data.local.dao.CategoryDao
 import com.projects.finio.data.local.dao.ItemDao
 import com.projects.finio.data.local.dao.NoteDao
@@ -20,6 +21,11 @@ import com.projects.finio.data.local.entity.Price
 import com.projects.finio.data.local.entity.Schedule
 import com.projects.finio.data.local.entity.ScheduleItem
 import com.projects.finio.data.local.entity.Subscription
+import com.projects.finio.data.local.migrations.ALL_MIGRATIONS
+import com.projects.finio.data.local.seeds.CategorySeeder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [
@@ -32,7 +38,7 @@ import com.projects.finio.data.local.entity.Subscription
         ScheduleItem::class,
         Subscription::class
                ],
-    version = 11,
+    version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -56,7 +62,16 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "database_finio"
                 )
-                    .fallbackToDestructiveMigration()
+                    .addCallback(object : Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val dbInstance = getDatabase(context)
+                                CategorySeeder.seed(dbInstance)
+                            }
+                        }
+                    })
+                    .addMigrations(*ALL_MIGRATIONS.toTypedArray())
                     .build()
                 INSTANCE = instance
                 instance

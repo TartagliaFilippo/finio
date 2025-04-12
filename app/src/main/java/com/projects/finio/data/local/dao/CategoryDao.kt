@@ -26,6 +26,10 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(category: Category)
 
+    // per seeder
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertAll(categories: Array<Category>)
+
     @Update
     suspend fun updateCategory(category: Category)
 
