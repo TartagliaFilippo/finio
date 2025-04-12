@@ -45,8 +45,7 @@ class NoteViewModel @Inject constructor(
     fun addNote(
         title: String,
         content: String,
-        categoryId: Int,
-        periodId: Int
+        categoryId: Int
     ): Result<Unit> {
         val error = validateNote(title, content, categoryId)
 
@@ -61,7 +60,7 @@ class NoteViewModel @Inject constructor(
                     title = title,
                     content = content,
                     categoryId = categoryId,
-                    periodId = periodId,
+                    periodId = null,
                     expireDate = 0
                 )
             )
@@ -80,7 +79,12 @@ class NoteViewModel @Inject constructor(
 
     fun deleteNote(note: Note) {
         viewModelScope.launch {
-            repository.deleteNote(note)
+            try {
+                repository.deleteNote(note)
+            } catch (_: Exception) {
+                _errorMessage.value = "Errore nella cancellazione"
+            }
+
         }
     }
 }

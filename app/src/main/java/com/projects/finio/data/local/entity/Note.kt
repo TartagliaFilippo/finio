@@ -33,7 +33,7 @@ data class Note (
     val categoryId: Int,
 
     @ColumnInfo(name = "period_id")
-    val periodId: Int,
+    val periodId: Int?,
 
     @ColumnInfo(name = "title")
     val title: String,
