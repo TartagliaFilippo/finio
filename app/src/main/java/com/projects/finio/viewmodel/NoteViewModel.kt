@@ -77,6 +77,33 @@ class NoteViewModel @Inject constructor(
         return Result.success(Unit)
     }
 
+    fun updateNote(note: Note): Result<Unit> {
+        val error = validateNote(
+            note.title,
+            note.content,
+            1
+        )
+
+        if (error != null) {
+            _errorMessage.value = error
+            return Result.failure(Exception(error))
+        }
+
+        viewModelScope.launch {
+
+            val result = repository.updateNote(note)
+
+            result.onFailure {
+                _errorMessage.value = it.message
+            }
+
+            result.onSuccess {
+                _errorMessage.value = null
+            }
+        }
+        return Result.success(Unit)
+    }
+
     fun deleteNote(note: Note) {
         viewModelScope.launch {
             try {

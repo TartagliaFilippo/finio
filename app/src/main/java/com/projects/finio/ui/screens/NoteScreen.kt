@@ -50,6 +50,7 @@ import com.projects.finio.ui.components.CustomSnackbar
 import com.projects.finio.ui.components.formatTimestampUniversal
 import com.projects.finio.ui.components.modals.AddNoteModal
 import com.projects.finio.ui.components.modals.ConfirmDialog
+import com.projects.finio.ui.components.modals.EditNoteModal
 import com.projects.finio.viewmodel.NoteViewModel
 import com.projects.finio.viewmodel.snackbar.SnackbarManager
 import kotlinx.coroutines.launch
@@ -223,6 +224,26 @@ fun NoteScreen(
                     selectedCategory = null
                 },
                 onDismiss = { addNoteModal = false }
+            )
+
+            EditNoteModal(
+                showModal = editNote != null,
+                note = editNote,
+                errorMessage = errorMessage,
+                onNoteTitleChange = { newTitle ->
+                    editNote = editNote?.copy(title = newTitle)
+                },
+                onNoteContentChange = { newContent ->
+                    editNote = editNote?.copy(title = newContent)
+                },
+                onConfirm = {
+                    editNote?.let { note ->
+                        viewModel.updateNote(note)
+                    }
+                    editNote = null
+                },
+                onDismiss = { editNote = null }
+
             )
 
             noteToDelete?.let { note ->

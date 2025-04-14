@@ -28,14 +28,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.projects.finio.data.local.entity.Note
 
 @Composable
-fun AddNoteModal(
+fun EditNoteModal(
     modifier: Modifier = Modifier,
     showModal: Boolean,
-    title: String,
-    noteTitle: String,
-    noteContent: String,
+    note: Note?,
     errorMessage: String?,
     onNoteTitleChange: (String) -> Unit,
     onNoteContentChange: (String) -> Unit,
@@ -45,7 +44,7 @@ fun AddNoteModal(
     var titleError by remember { mutableStateOf<String?>(null) }
     var contentError by remember { mutableStateOf<String?>(null) }
 
-    if (showModal) {
+    if (showModal && note != null) {
         Dialog(onDismissRequest = onDismiss) {
             Box(
                 modifier = modifier.fillMaxSize(),
@@ -61,14 +60,14 @@ fun AddNoteModal(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = title,
+                            text = "Modifica ${note.title}",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
 
                         OutlinedTextField(
-                            value = noteTitle,
+                            value = note.title,
                             onValueChange = {
                                 onNoteTitleChange(it)
                                 titleError = when {
@@ -83,7 +82,6 @@ fun AddNoteModal(
                             isError = titleError != null || errorMessage != null
                         )
 
-                        // Messaggi di errore (sia locale che dal repository)
                         val errorText = titleError ?: errorMessage
                         if (errorText != null) {
                             Text(
@@ -97,15 +95,15 @@ fun AddNoteModal(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         OutlinedTextField(
-                            value = noteContent,
+                            value = note.content,
                             onValueChange = {
                                 onNoteContentChange(it)
                                 contentError = when {
-                                    it.isBlank() -> "La nota non può essere vuota"
+                                    it.isBlank() -> "Scrivi qualcosa su questa nota"
                                     else -> null
                                 }
                             },
-                            label = { Text("Descrizione") },
+                            label = { Text("Testo") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.9f)
                         )
@@ -122,8 +120,6 @@ fun AddNoteModal(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -134,20 +130,21 @@ fun AddNoteModal(
                             Button(
                                 enabled = titleError == null && contentError == null && errorMessage == null,
                                 onClick = {
-                                    if (noteTitle.isBlank()) {
+                                    if (note.title.isBlank()) {
                                         titleError = "Il titolo non può essere vuoto"
-                                    } else if (noteTitle.length > 30) {
+                                    } else if (note.title.length > 30) {
                                         titleError = "Il titolo non può superare i 30 caratteri"
-                                    } else if (noteContent.isBlank()) {
-                                        contentError = "Scrivi qualcosa sulla nota"
+                                    } else if (note.content.isBlank()) {
+                                        contentError = "Scrivi qualcosa su questa nota"
                                     } else {
                                         onConfirm()
                                     }
                                 }
                             ) {
-                                Text("Conferma")
+                                Text("Salva")
                             }
                         }
+
                     }
                 }
             }
